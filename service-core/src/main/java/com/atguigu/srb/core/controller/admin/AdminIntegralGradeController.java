@@ -8,6 +8,7 @@ import com.atguigu.srb.core.service.IntegralGradeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -16,6 +17,7 @@ import java.util.List;
 /**
  * @author lucky845
  */
+@Slf4j
 @Api(tags = "积分等级管理")
 @CrossOrigin
 @RestController
@@ -31,6 +33,14 @@ public class AdminIntegralGradeController {
     @ApiOperation(value = "获取积分等级列表")
     @GetMapping("/list")
     public R listAll() {
+
+        // 测试不同日志级别打印效果
+        /*
+            log.info("info...");
+            log.warn("warn...");
+            log.error("error...");
+        */
+
         List<IntegralGrade> list = integralGradeService.list();
         return R.ok().data("list", list);
     }
