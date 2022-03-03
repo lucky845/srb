@@ -8,9 +8,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+/**
+ * mybatisPlus配制类
+ */
 @Configuration
 @MapperScan("com.atguigu.srb.core.mapper")
-@EnableTransactionManagement // 事务处理
+@EnableTransactionManagement // 处理事务
 public class MybatisPlusConfig {
 
     /**
