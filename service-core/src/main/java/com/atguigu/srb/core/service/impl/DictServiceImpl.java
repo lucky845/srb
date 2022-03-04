@@ -78,12 +78,12 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
     }
 
     /**
-     * 判断该节点是否有子节点
+     * 判断当前id下是否有子节点该节点是否有子节点
      *
-     * @param parentId 父节点id
+     * @param id 当前id
      */
-    private boolean hasChildren(Long parentId) {
-        QueryWrapper<Dict> queryWrapper = new QueryWrapper<Dict>().eq("parent_id", parentId);
+    private boolean hasChildren(Long id) {
+        QueryWrapper<Dict> queryWrapper = new QueryWrapper<Dict>().eq("parent_id", id);
         Integer count = baseMapper.selectCount(queryWrapper);
         return count > 0;
     }
