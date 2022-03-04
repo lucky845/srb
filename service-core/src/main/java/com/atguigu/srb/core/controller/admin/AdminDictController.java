@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 /**
@@ -68,14 +67,17 @@ public class AdminDictController {
     @GetMapping("/export")
     public void export(HttpServletResponse response) {
         try {
+            // 设置响应内容类型
             response.setContentType("application/vnd.ms-excel");
+            // 设置编码格式为UTF-8
             response.setCharacterEncoding("utf-8");
-            // 这里URLEncoder.encoder可以防止正文响应乱码,和easyExcel没有关系
-            String fileName = URLEncoder.encode("", "UTF-8").replaceAll("\\+", "%20");
+            // 这里URLEncoder.encoder可以防止响应正文乱码,和easyExcel没有关系
+            String fileName = URLEncoder.encode("MyDict", "UTF-8").replaceAll("\\+", "%20");
             response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+            // 蒋数据写入到文件中
             EasyExcel.write(response.getOutputStream(), ExcelDictDTO.class).sheet("数据字典").doWrite(dictService.listDictData());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             // EXPORT_DATA_ERROR(104, "数据导出失败")
             throw new BusinessException(ResponseEnum.EXPORT_DATA_ERROR);
         }
