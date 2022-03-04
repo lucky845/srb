@@ -91,7 +91,7 @@ public class AdminDictController {
      * @param parentId 上级节点id
      */
     @ApiOperation("根据上级id获取子节点数据列表")
-    @GetMapping("/listByParentId/{parent}")
+    @GetMapping("/listByParentId/{parentId}")
     public R listByParentId(
             @ApiParam(name = "parentId", value = "上级节点id", required = true)
             @PathVariable Long parentId) {
