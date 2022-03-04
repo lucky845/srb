@@ -22,5 +22,5 @@ mybatis-plus:
   # 设置mapper映射文件路径
   mapper-locations: classpath:com/atguigu/srb/core/mapper/xml/*.xml
 # 设置日志级别
-logging:
-  level: error
+#logging:
+#  level: error
