@@ -1,5 +1,6 @@
 package com.atguigu.srb.sms;
 
+import com.atguigu.common.util.RandomUtils;
 import com.atguigu.srb.sms.service.SmsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +21,7 @@ public class SentCodeTest {
     @Test
     public void sent(){
         HashMap<String, Object> map = new HashMap<>();
-        map.put("code", "6666");
+        map.put("code", RandomUtils.getFourBitRandom());
 
         smsService.send("你的手机号", map);
     }
