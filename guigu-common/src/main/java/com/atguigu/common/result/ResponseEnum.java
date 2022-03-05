@@ -132,7 +132,12 @@ public enum ResponseEnum {
     /**
      * 获取用户信息失败
      */
-    WEIXIN_FETCH_USERINFO_ERROR(-603, "获取用户信息失败");
+    WEIXIN_FETCH_USERINFO_ERROR(-603, "获取用户信息失败"),
+
+    /**
+     * 阿里云响应失败
+     */
+    ALIYUN_RESPONSE_FAIL(-501, "阿里云响应失败");
 
     /**
      * 响应状态码
