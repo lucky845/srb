@@ -3,10 +3,10 @@ package com.atguigu.srb.core;
 import com.atguigu.srb.core.mapper.DictMapper;
 import com.atguigu.srb.core.pojo.entity.Dict;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
 /**
