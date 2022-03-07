@@ -18,10 +18,10 @@ import java.util.concurrent.TimeUnit;
 @SpringBootTest
 public class RedisTemplateTests {
 
-    @Resource
+    @Autowired
     private RedisTemplate redisTemplate;
 
-    @Resource
+    @Autowired
     private DictMapper dictMapper;
 
     @Test

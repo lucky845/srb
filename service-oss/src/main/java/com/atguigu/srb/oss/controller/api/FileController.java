@@ -23,7 +23,7 @@ import java.io.InputStream;
 @RequestMapping("/api/oss/file")
 public class FileController {
 
-    @Resource
+    @Autowired
     private FileService fileService;
 
     /**

@@ -10,10 +10,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -29,10 +29,10 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class ApiSmsController {
 
-    @Resource
+    @Autowired
     private SmsService smsService;
 
-    @Resource
+    @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
     /**
@@ -57,7 +57,7 @@ public class ApiSmsController {
         Map<String, Object> param = new HashMap<>();
         param.put("code", code);
         // 发送短信
-        smsService.send(mobile, param);
+//        smsService.send(mobile, param);
 
         // 将验证码存入redis
         redisTemplate.opsForValue().set("srb:sms:code:" + mobile, code, 5, TimeUnit.MINUTES);

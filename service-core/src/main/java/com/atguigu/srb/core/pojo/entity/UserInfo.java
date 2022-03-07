@@ -27,6 +27,20 @@ public class UserInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 用户状态: 可用
+     */
+    public static final Integer STATUS_NORMAL = 1;
+    /**
+     * 用户状态: 锁定
+     */
+    public static final Integer STATUS_LOCKED = 0;
+
+    /**
+     * 使用base64压缩的头像
+     */
+    public static final String USER_AVATAR = "https://lucky845.oss-cn-shenzhen.aliyuncs.com/srb%E7%94%A8%E6%88%B7%E5%A4%B4%E5%83%8F/QQ%E5%9B%BE%E7%89%87.gif";
+
     @ApiModelProperty(value = "编号")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
