@@ -16,6 +16,12 @@
     </properties>
 
     <dependencies>
+        <!-- swagger-bootstrap-ui -->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>swagger-bootstrap-ui</artifactId>
+            <version>1.9.2</version>
+        </dependency>
         <!-- jwt: json web token -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -33,10 +39,10 @@
             <artifactId>springfox-swagger2</artifactId>
         </dependency>
         <!--swagger ui-->
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>io.springfox</groupId>-->
+<!--            <artifactId>springfox-swagger-ui</artifactId>-->
+<!--        </dependency>-->
         <!-- spring boot redis缓存引入 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

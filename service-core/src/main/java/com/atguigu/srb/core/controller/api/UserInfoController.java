@@ -5,6 +5,7 @@ import com.atguigu.common.exception.Assert;
 import com.atguigu.common.result.R;
 import com.atguigu.common.result.ResponseEnum;
 import com.atguigu.common.util.RegexValidateUtils;
+import com.atguigu.srb.base.util.JwtUtils;
 import com.atguigu.srb.core.pojo.vo.LoginVO;
 import com.atguigu.srb.core.pojo.vo.RegisterVO;
 import com.atguigu.srb.core.pojo.vo.UserInfoVO;
@@ -96,6 +97,24 @@ public class UserInfoController {
         UserInfoVO userInfoVO = userInfoService.login(loginVO, ip);
 
         return R.ok().data("userInfo", userInfoVO);
+    }
+
+    /**
+     * 校验令牌
+     */
+    @ApiOperation(value = "校验令牌")
+    @GetMapping("/checkToken")
+    public R checkToken(HttpServletRequest request) {
+
+        String token = request.getHeader("token");
+        boolean result = JwtUtils.checkToken(token);
+
+        if (result) {
+            return R.ok();
+        } else {
+            // LOGIN_AUTH_ERROR(-211, "未登录")
+            return R.setResult(ResponseEnum.LOGIN_AUTH_ERROR);
+        }
     }
 
 }
