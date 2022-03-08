@@ -20,12 +20,15 @@ spring:
         max-wait: -1    #最大阻塞等待时间，负值表示没限制，默认-1
         max-idle: 8     #最大空闲连接，默认8
         min-idle: 0     #最小空闲连接，默认0
-
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848 # nacos服务地址
 # 容联云短信
 rckj:
   sms:
-    accountSid: 你的Sid
-    accountToken: 你的Token
-    appId: 你的appId
+    accountSid: ###
+    accountToken: ###
+    appId: ###
     serverIp: app.cloopen.com
     ServerPort: 8883
