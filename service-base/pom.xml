@@ -16,6 +16,12 @@
     </properties>
 
     <dependencies>
+        <!-- jwt: json web token -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+        </dependency>
+        <!-- 依赖common模块 -->
         <dependency>
             <groupId>com.atguigu</groupId>
             <artifactId>guigu-common</artifactId>

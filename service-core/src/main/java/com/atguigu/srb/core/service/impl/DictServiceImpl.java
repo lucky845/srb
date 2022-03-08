@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements DictService {
 
     @Autowired
-    private RedisTemplate<String, List<Dict>> redisTemplate;
+    private RedisTemplate redisTemplate;
 
     /**
      * 读取Excel文件
@@ -78,7 +78,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
         List<Dict> dictList = null;
         try {
             // 先查询Redis中是否存在数据列表
-            dictList = redisTemplate.opsForValue().get("srb:core:dictList:" + parentId);
+            dictList = (List<Dict>) redisTemplate.opsForValue().get("srb:core:dictList:" + parentId);
             if (dictList != null) {
                 // 如果存在则从Redis中直接返回数据列表
                 log.info("从redis中取值");

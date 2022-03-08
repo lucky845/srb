@@ -1,13 +1,19 @@
 package com.atguigu.srb.core.service.impl;
 
+import com.atguigu.common.exception.Assert;
 import com.atguigu.common.exception.BusinessException;
 import com.atguigu.common.result.ResponseEnum;
 import com.atguigu.common.util.MD5;
+import com.atguigu.srb.base.util.JwtUtils;
 import com.atguigu.srb.core.mapper.UserAccountMapper;
 import com.atguigu.srb.core.mapper.UserInfoMapper;
+import com.atguigu.srb.core.mapper.UserLoginRecordMapper;
 import com.atguigu.srb.core.pojo.entity.UserAccount;
 import com.atguigu.srb.core.pojo.entity.UserInfo;
+import com.atguigu.srb.core.pojo.entity.UserLoginRecord;
+import com.atguigu.srb.core.pojo.vo.LoginVO;
 import com.atguigu.srb.core.pojo.vo.RegisterVO;
+import com.atguigu.srb.core.pojo.vo.UserInfoVO;
 import com.atguigu.srb.core.service.UserInfoService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -28,6 +34,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
     @Autowired
     private UserAccountMapper userAccountMapper;
+
+    @Autowired
+    private UserLoginRecordMapper userLoginRecordMapper;
 
     /**
      * 用户注册
@@ -70,5 +79,56 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         UserAccount userAccount = new UserAccount();
         userAccount.setUserId(userInfo.getId());
         userAccountMapper.insert(userAccount);
+    }
+
+    /**
+     * 用户登陆
+     *
+     * @param loginVO 用户登陆信息
+     * @param ip      用户访问ip
+     */
+    @Override
+    public UserInfoVO login(LoginVO loginVO, String ip) {
+        // 获取用户登陆信息
+        String mobile = loginVO.getMobile();
+        String password = loginVO.getPassword();
+        Integer userType = loginVO.getUserType();
+
+        // 用户是否存在
+        QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
+        userInfoQueryWrapper
+                .eq("mobile", mobile)
+                .eq("user_type", userType);
+        UserInfo userInfo = baseMapper.selectOne(userInfoQueryWrapper);
+        // LOGIN_MOBILE_ERROR(208, "用户不存在")
+        Assert.notNull(userInfo, ResponseEnum.LOGIN_MOBILE_ERROR);
+
+        // 密码是否正确
+        // LOGIN_PASSWORD_ERROR(209, "密码错误")
+        Assert.equals(MD5.encrypt(password), userInfo.getPassword(), ResponseEnum.LOGIN_PASSWORD_ERROR);
+
+        // 用户是否被禁用
+        // LOGIN_LOKED_ERROR(210, "用户被锁定")
+        Assert.equals(userInfo.getStatus(), UserInfo.STATUS_NORMAL, ResponseEnum.LOGIN_LOKED_ERROR);
+
+        // 记录登陆日志
+        UserLoginRecord userLoginRecord = new UserLoginRecord();
+        userLoginRecord.setUserId(userInfo.getId());
+        userLoginRecord.setIp(ip);
+        userLoginRecordMapper.insert(userLoginRecord);
+
+        // 生成token
+        String token = JwtUtils.createToken(userInfo.getId(), userInfo.getName());
+
+        // 组装userInfoVO
+        UserInfoVO userInfoVO = new UserInfoVO();
+        userInfoVO.setToken(token);
+        userInfoVO.setName(userInfo.getName());
+        userInfoVO.setNickName(userInfo.getNickName());
+        userInfoVO.setHeadImg(userInfo.getHeadImg());
+        userInfoVO.setMobile(userInfo.getMobile());
+        userInfoVO.setUserType(userType);
+
+        return userInfoVO;
     }
 }

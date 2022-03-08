@@ -5,7 +5,9 @@ import com.atguigu.common.exception.Assert;
 import com.atguigu.common.result.R;
 import com.atguigu.common.result.ResponseEnum;
 import com.atguigu.common.util.RegexValidateUtils;
+import com.atguigu.srb.core.pojo.vo.LoginVO;
 import com.atguigu.srb.core.pojo.vo.RegisterVO;
+import com.atguigu.srb.core.pojo.vo.UserInfoVO;
 import com.atguigu.srb.core.service.UserInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -13,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * <p>
@@ -35,6 +39,11 @@ public class UserInfoController {
     @Autowired
     private UserInfoService userInfoService;
 
+    /**
+     * 会员注册
+     *
+     * @param registerVO 会员注册信息
+     */
     @ApiOperation(value = "会员注册")
     @PostMapping("/register")
     public R register(@RequestBody RegisterVO registerVO) {
@@ -64,6 +73,29 @@ public class UserInfoController {
         // 注册
         userInfoService.register(registerVO);
         return R.ok().message("注册成功");
+    }
+
+    /**
+     * 会员登陆
+     *
+     * @param loginVO 会员登陆信息
+     */
+    @ApiOperation(value = "会员登陆")
+    @PostMapping("/login")
+    public R login(@RequestBody LoginVO loginVO, HttpServletRequest request) {
+
+        String mobile = loginVO.getMobile();
+        String password = loginVO.getPassword();
+
+        // MOBILE_NULL_ERROR(-202, "手机号码不能为空")
+        Assert.notEmpty(mobile, ResponseEnum.MOBILE_NULL_ERROR);
+        // PASSWORD_NULL_ERROR(204, "密码不能为空")
+        Assert.notEmpty(password, ResponseEnum.PASSWORD_NULL_ERROR);
+
+        String ip = request.getRemoteAddr();
+        UserInfoVO userInfoVO = userInfoService.login(loginVO, ip);
+
+        return R.ok().data("userInfo", userInfoVO);
     }
 
 }

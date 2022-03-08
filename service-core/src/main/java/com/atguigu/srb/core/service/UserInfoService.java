@@ -1,7 +1,9 @@
 package com.atguigu.srb.core.service;
 
 import com.atguigu.srb.core.pojo.entity.UserInfo;
+import com.atguigu.srb.core.pojo.vo.LoginVO;
 import com.atguigu.srb.core.pojo.vo.RegisterVO;
+import com.atguigu.srb.core.pojo.vo.UserInfoVO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -20,4 +22,10 @@ public interface UserInfoService extends IService<UserInfo> {
      */
     void register(RegisterVO registerVO);
 
+    /**
+     * 用户登陆
+     * @param loginVO 用户登陆信息
+     * @param ip 用户访问ip
+     */
+    UserInfoVO login(LoginVO loginVO, String ip);
 }
