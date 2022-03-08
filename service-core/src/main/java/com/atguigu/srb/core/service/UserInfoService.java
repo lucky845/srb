@@ -44,8 +44,16 @@ public interface UserInfoService extends IService<UserInfo> {
 
     /**
      * 会员锁定
-     * @param id 会员id
+     *
+     * @param id     会员id
      * @param status 锁定状态
      */
     void lock(Long id, Integer status);
+
+    /**
+     * 校验手机号是否注册
+     *
+     * @param mobile 手机号
+     */
+    boolean checkMobile(String mobile);
 }
