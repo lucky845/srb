@@ -16,6 +16,11 @@
     </properties>
 
     <dependencies>
+        <!--服务发现-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
         <!-- swagger-bootstrap-ui -->
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
