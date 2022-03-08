@@ -161,4 +161,18 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             return baseMapper.selectPage(pageParam, userInfoQueryWrapper);
         }
     }
+
+    /**
+     * 会员锁定
+     *
+     * @param id     会员id
+     * @param status 锁定状态
+     */
+    @Override
+    public void lock(Long id, Integer status) {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(id);
+        userInfo.setStatus(status);
+        baseMapper.updateById(userInfo);
+    }
 }
