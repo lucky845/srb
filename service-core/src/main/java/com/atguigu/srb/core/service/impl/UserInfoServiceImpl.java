@@ -11,12 +11,16 @@ import com.atguigu.srb.core.mapper.UserLoginRecordMapper;
 import com.atguigu.srb.core.pojo.entity.UserAccount;
 import com.atguigu.srb.core.pojo.entity.UserInfo;
 import com.atguigu.srb.core.pojo.entity.UserLoginRecord;
+import com.atguigu.srb.core.pojo.query.UserInfoQuery;
 import com.atguigu.srb.core.pojo.vo.LoginVO;
 import com.atguigu.srb.core.pojo.vo.RegisterVO;
 import com.atguigu.srb.core.pojo.vo.UserInfoVO;
 import com.atguigu.srb.core.service.UserInfoService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -130,5 +134,31 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         userInfoVO.setUserType(userType);
 
         return userInfoVO;
+    }
+
+    /**
+     * 获取会员分页列表
+     *
+     * @param pageParam     分页参数
+     * @param userInfoQuery 查询对象
+     */
+    @Override
+    public IPage<UserInfo> listPage(Page<UserInfo> pageParam, UserInfoQuery userInfoQuery) {
+        // 判断是否有查询条件
+        if (userInfoQuery == null) {
+            return baseMapper.selectPage(pageParam, null);
+        } else {
+            String mobile = userInfoQuery.getMobile();
+            Integer status = userInfoQuery.getStatus();
+            Integer userType = userInfoQuery.getUserType();
+
+            QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
+            userInfoQueryWrapper
+                    .eq(StringUtils.isNotBlank(mobile), "mobile", mobile)
+                    .eq(null != status, "status", status)
+                    .eq(null != userType, "user_type", userType);
+
+            return baseMapper.selectPage(pageParam, userInfoQueryWrapper);
+        }
     }
 }
