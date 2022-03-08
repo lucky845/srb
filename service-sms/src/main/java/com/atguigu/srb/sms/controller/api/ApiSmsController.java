@@ -33,7 +33,7 @@ public class ApiSmsController {
     private SmsService smsService;
 
     @Autowired
-    private RedisTemplate<String, String> redisTemplate;
+    private RedisTemplate redisTemplate;
 
     /**
      * 获取验证码
