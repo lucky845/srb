@@ -16,6 +16,11 @@
     </properties>
 
     <dependencies>
+        <!--服务容错-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
         <!--服务调用-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>

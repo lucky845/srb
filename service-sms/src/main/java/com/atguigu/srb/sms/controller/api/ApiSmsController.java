@@ -58,7 +58,7 @@ public class ApiSmsController {
         // 判断手机号是否已经注册过了
         boolean result = coreUserInfoClient.checkMobile(mobile);
         // MOBILE_EXIST_ERROR(207, "手机号已被注册")
-        Assert.isTrue(result == false,ResponseEnum.MOBILE_EXIST_ERROR);
+        Assert.isTrue(result == false, ResponseEnum.MOBILE_EXIST_ERROR);
 
         // 生成验证码
         String code = RandomUtils.getFourBitRandom();
