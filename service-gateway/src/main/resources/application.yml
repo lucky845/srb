@@ -17,3 +17,16 @@ spring:
       discovery:
         locator:
           enabled: true # gateway可以发现nacos中的微服务，并自动生成转发路由
+      routes:
+        - id: service-core
+          uri: lb://service-core
+          predicates:
+            - Path=/*/core/**
+        - id: service-sms
+          uri: lb://service-sms
+          predicates:
+            - Path=/*/sms/**
+        - id: service-oss
+          uri: lb://service-oss
+          predicates:
+            - Path=/*/oss/**

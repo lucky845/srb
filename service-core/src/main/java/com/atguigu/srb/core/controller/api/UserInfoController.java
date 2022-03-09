@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Api(tags = "会员接口")
 @Slf4j
-@CrossOrigin
 @RestController
 @RequestMapping("/api/core/userInfo")
 public class UserInfoController {

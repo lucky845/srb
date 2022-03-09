@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("/api/sms")
 @Api(tags = "短信管理")
-@CrossOrigin //跨域
 @Slf4j
 public class ApiSmsController {
 

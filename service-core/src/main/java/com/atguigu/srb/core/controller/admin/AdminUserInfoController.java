@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/admin/core/userInfo")
 @Slf4j
-@CrossOrigin
 public class AdminUserInfoController {
 
     @Autowired
