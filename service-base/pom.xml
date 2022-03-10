@@ -16,6 +16,11 @@
     </properties>
 
     <dependencies>
+        <!-- json解析 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
         <!--服务容错-->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
