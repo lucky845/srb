@@ -17,6 +17,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -94,6 +95,7 @@ public class UserBindServiceImpl extends ServiceImpl<UserBindMapper, UserBind> i
      *
      * @param paramMap 用户绑定信息
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void notify(Map<String, Object> paramMap) {
 
