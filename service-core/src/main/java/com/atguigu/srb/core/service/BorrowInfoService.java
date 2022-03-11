@@ -1,9 +1,12 @@
 package com.atguigu.srb.core.service;
 
 import com.atguigu.srb.core.pojo.entity.BorrowInfo;
+import com.atguigu.srb.core.pojo.vo.BorrowInfoApprovalVO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -36,4 +39,24 @@ public interface BorrowInfoService extends IService<BorrowInfo> {
      * @param userId 借款人id
      */
     Integer getStatusByUserId(Long userId);
+
+    /**
+     * 借款信息列表
+     */
+    List<BorrowInfo> selectList();
+
+    /**
+     * 根据借款id获取借款信息
+     *
+     * @param id 借款id
+     */
+    Map<String, Object> getBorrowInfoDetail(Long id);
+
+    /**
+     * 审批借款信息
+     *
+     * @param borrowInfoApprovalVO 借款信息
+     */
+    void approval(BorrowInfoApprovalVO borrowInfoApprovalVO);
+
 }

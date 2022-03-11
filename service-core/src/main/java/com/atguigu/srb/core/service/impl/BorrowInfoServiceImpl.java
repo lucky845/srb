@@ -6,19 +6,27 @@ import com.atguigu.srb.core.enums.BorrowInfoStatusEnum;
 import com.atguigu.srb.core.enums.BorrowerStatusEnum;
 import com.atguigu.srb.core.enums.UserBindEnum;
 import com.atguigu.srb.core.mapper.BorrowInfoMapper;
+import com.atguigu.srb.core.mapper.BorrowerMapper;
 import com.atguigu.srb.core.mapper.IntegralGradeMapper;
 import com.atguigu.srb.core.mapper.UserInfoMapper;
 import com.atguigu.srb.core.pojo.entity.BorrowInfo;
+import com.atguigu.srb.core.pojo.entity.Borrower;
 import com.atguigu.srb.core.pojo.entity.IntegralGrade;
 import com.atguigu.srb.core.pojo.entity.UserInfo;
+import com.atguigu.srb.core.pojo.vo.BorrowInfoApprovalVO;
+import com.atguigu.srb.core.pojo.vo.BorrowerDetailVO;
 import com.atguigu.srb.core.service.BorrowInfoService;
+import com.atguigu.srb.core.service.BorrowerService;
+import com.atguigu.srb.core.service.DictService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -36,6 +44,15 @@ public class BorrowInfoServiceImpl extends ServiceImpl<BorrowInfoMapper, BorrowI
 
     @Autowired
     private IntegralGradeMapper integralGradeMapper;
+
+    @Autowired
+    private DictService dictService;
+
+    @Autowired
+    private BorrowerMapper borrowerMapper;
+
+    @Autowired
+    private BorrowerService borrowerService;
 
     /**
      * 根据用户id获取借款额度
@@ -117,5 +134,74 @@ public class BorrowInfoServiceImpl extends ServiceImpl<BorrowInfoMapper, BorrowI
             return BorrowInfoStatusEnum.NO_AUTH.getStatus();
         }
         return (Integer) objects.get(0);
+    }
+
+    /**
+     * 借款信息列表
+     */
+    @Override
+    public List<BorrowInfo> selectList() {
+        List<BorrowInfo> borrowInfoList = baseMapper.selectBorrowInfoList();
+        borrowInfoList.forEach(borrowInfo -> {
+            String returnMethod = dictService.getNameByParentDictCodeAndValue("returnMethod", borrowInfo.getReturnMethod());
+            String moneyUse = dictService.getNameByParentDictCodeAndValue("moneyUse", borrowInfo.getMoneyUse());
+            String status = BorrowerStatusEnum.getMsgByStatus(borrowInfo.getStatus());
+            borrowInfo.getParam().put("returnMethod", returnMethod);
+            borrowInfo.getParam().put("moneyUse", moneyUse);
+            borrowInfo.getParam().put("status", status);
+        });
+
+        return borrowInfoList;
+    }
+
+    /**
+     * 根据借款id获取借款信息
+     *
+     * @param id 借款id
+     */
+    @Override
+    public Map<String, Object> getBorrowInfoDetail(Long id) {
+        // 查询借款对象
+        BorrowInfo borrowInfo = baseMapper.selectById(id);
+        // 组装数据
+        String returnMethod = dictService.getNameByParentDictCodeAndValue("returnMethod", borrowInfo.getReturnMethod());
+        String moneyUse = dictService.getNameByParentDictCodeAndValue("moneyUse", borrowInfo.getMoneyUse());
+        String status = BorrowerStatusEnum.getMsgByStatus(borrowInfo.getStatus());
+        borrowInfo.getParam().put("returnMethod", returnMethod);
+        borrowInfo.getParam().put("moneyUse", moneyUse);
+        borrowInfo.getParam().put("status", status);
+
+        // 根据user_id获取借款人对象
+        QueryWrapper<Borrower> borrowerQueryWrapper = new QueryWrapper<>();
+        borrowerQueryWrapper.eq("user_id", borrowInfo.getUserId());
+        Borrower borrower = borrowerMapper.selectOne(borrowerQueryWrapper);
+        // 组装借款人对象
+        BorrowerDetailVO borrowerDetailVO = borrowerService.getBorrowerDetailVOById(borrower.getId());
+
+        // 组装数据
+        Map<String, Object> result = new HashMap<>();
+        result.put("borrowInfo", borrowInfo);
+        result.put("borrower", borrowerDetailVO);
+        return result;
+    }
+
+    /**
+     * 审批借款信息
+     *
+     * @param borrowInfoApprovalVO 借款信息
+     */
+    @Override
+    public void approval(BorrowInfoApprovalVO borrowInfoApprovalVO) {
+        // 修改借款信息状态
+        Long borrowInfoId = borrowInfoApprovalVO.getId();
+        BorrowInfo borrowInfo = baseMapper.selectById(borrowInfoId);
+        borrowInfo.setStatus(borrowInfoApprovalVO.getStatus());
+        baseMapper.updateById(borrowInfo);
+
+        // 审核通过创建标的
+        if (borrowInfoApprovalVO.getStatus().intValue() == BorrowInfoStatusEnum.CHECK_OK.getStatus().intValue()){
+            // 创建标的
+            // todo
+        }
     }
 }
