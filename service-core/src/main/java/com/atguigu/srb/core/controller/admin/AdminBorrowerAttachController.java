@@ -1,4 +1,4 @@
-package com.atguigu.srb.core.controller;
+package com.atguigu.srb.core.controller.admin;
 
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/borrowerAttach")
-public class BorrowerAttachController {
+public class AdminBorrowerAttachController {
 
 }
 
