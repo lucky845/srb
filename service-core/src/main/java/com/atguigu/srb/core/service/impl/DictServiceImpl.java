@@ -121,4 +121,16 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
         return count > 0;
     }
 
+    /**
+     * 根据dictCode获取下集节点
+     *
+     * @param dictCode 节点编码
+     */
+    @Override
+    public List<Dict> findByDictCode(String dictCode) {
+        QueryWrapper<Dict> dictQueryWrapper = new QueryWrapper<>();
+        dictQueryWrapper.eq("dict_code", dictCode);
+        Dict dict = baseMapper.selectOne(dictQueryWrapper);
+        return this.listByParentId(dict.getId());
+    }
 }
