@@ -18,6 +18,7 @@ import com.atguigu.srb.core.pojo.vo.BorrowerDetailVO;
 import com.atguigu.srb.core.service.BorrowInfoService;
 import com.atguigu.srb.core.service.BorrowerService;
 import com.atguigu.srb.core.service.DictService;
+import com.atguigu.srb.core.service.LendService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,9 @@ public class BorrowInfoServiceImpl extends ServiceImpl<BorrowInfoMapper, BorrowI
 
     @Autowired
     private BorrowerService borrowerService;
+
+    @Autowired
+    private LendService lendService;
 
     /**
      * 根据用户id获取借款额度
@@ -199,9 +203,9 @@ public class BorrowInfoServiceImpl extends ServiceImpl<BorrowInfoMapper, BorrowI
         baseMapper.updateById(borrowInfo);
 
         // 审核通过创建标的
-        if (borrowInfoApprovalVO.getStatus().intValue() == BorrowInfoStatusEnum.CHECK_OK.getStatus().intValue()){
+        if (borrowInfoApprovalVO.getStatus().intValue() == BorrowInfoStatusEnum.CHECK_OK.getStatus().intValue()) {
             // 创建标的
-            // todo
+            lendService.createLend(borrowInfoApprovalVO, borrowInfo);
         }
     }
 }
