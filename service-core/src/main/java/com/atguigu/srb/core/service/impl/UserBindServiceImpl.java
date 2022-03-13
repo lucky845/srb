@@ -61,7 +61,7 @@ public class UserBindServiceImpl extends ServiceImpl<UserBindMapper, UserBind> i
         userBind = baseMapper.selectOne(userBindQueryWrapper);
 
         //判断是否有绑定记录
-        if(userBind == null) {
+        if (userBind == null) {
             //如果未创建绑定记录，则创建一条记录
             userBind = new UserBind();
             BeanUtils.copyProperties(userBindVO, userBind);
@@ -77,7 +77,7 @@ public class UserBindServiceImpl extends ServiceImpl<UserBindMapper, UserBind> i
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("agentId", HfbConst.AGENT_ID);
         paramMap.put("agentUserId", userId);
-        paramMap.put("idCard",userBindVO.getIdCard());
+        paramMap.put("idCard", userBindVO.getIdCard());
         paramMap.put("personalName", userBindVO.getName());
         paramMap.put("bankType", userBindVO.getBankType());
         paramMap.put("bankNo", userBindVO.getBankNo());
@@ -122,5 +122,16 @@ public class UserBindServiceImpl extends ServiceImpl<UserBindMapper, UserBind> i
         userInfo.setIdCard(userBind.getIdCard());
         userInfo.setBindStatus(UserBindEnum.BIND_OK.getStatus());
         userInfoMapper.updateById(userInfo);
+    }
+
+    /**
+     * 根据投资用户id获取绑定编号
+     *
+     * @param investUserId 投资用户id
+     */
+    @Override
+    public String getBindCodeByUserId(Long investUserId) {
+        UserBind userBind = baseMapper.selectOne(new QueryWrapper<UserBind>().eq("user_id", investUserId));
+        return userBind.getBindCode();
     }
 }

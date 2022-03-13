@@ -20,13 +20,21 @@ public interface UserBindService extends IService<UserBind> {
      * 账户绑定提交到托管平台的数据
      *
      * @param userBindVO 用户绑定信息
-     * @param userId 用户id
+     * @param userId     用户id
      */
     String commitBindUser(UserBindVO userBindVO, Long userId);
 
     /**
      * 用户账户绑定异步回调
+     *
      * @param paramMap 用户绑定信息
      */
     void notify(Map<String, Object> paramMap);
+
+    /**
+     * 根据投资用户id获取绑定编号
+     *
+     * @param investUserId 投资用户id
+     */
+    String getBindCodeByUserId(Long investUserId);
 }

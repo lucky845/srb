@@ -1,12 +1,13 @@
 package com.atguigu.srb.core.service.impl;
 
-import com.atguigu.srb.base.util.LendNoUtils;
+import com.atguigu.srb.base.util.*;
 import com.atguigu.srb.core.enums.LendStatusEnum;
+import com.atguigu.srb.core.enums.ReturnMethodEnum;
 import com.atguigu.srb.core.mapper.BorrowerMapper;
+import com.atguigu.srb.core.mapper.LendMapper;
 import com.atguigu.srb.core.pojo.entity.BorrowInfo;
 import com.atguigu.srb.core.pojo.entity.Borrower;
 import com.atguigu.srb.core.pojo.entity.Lend;
-import com.atguigu.srb.core.mapper.LendMapper;
 import com.atguigu.srb.core.pojo.vo.BorrowInfoApprovalVO;
 import com.atguigu.srb.core.pojo.vo.BorrowerDetailVO;
 import com.atguigu.srb.core.service.BorrowerService;
@@ -144,5 +145,33 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
         result.put("borrower", borrowerDetailVO);
 
         return result;
+    }
+
+    /**
+     * 计算投资收益
+     *
+     * @param invest       投资金额
+     * @param yearRate     年化收益
+     * @param totalmonth   期数
+     * @param returnMethod 还款方式
+     */
+    @Override
+    public BigDecimal getInterestCount(BigDecimal invest, BigDecimal yearRate, Integer totalmonth, Integer returnMethod) {
+        BigDecimal interestCount;
+        // 计算总利息
+        if (returnMethod.intValue() == ReturnMethodEnum.ONE.getMethod()) {
+            // 等额本息
+            interestCount = Amount1Helper.getInterestCount(invest, yearRate, totalmonth);
+        } else if (returnMethod.intValue() == ReturnMethodEnum.TWO.getMethod()) {
+            // 等额本金
+            interestCount = Amount2Helper.getInterestCount(invest, yearRate, totalmonth);
+        } else if (returnMethod.intValue() == ReturnMethodEnum.THREE.getMethod()) {
+            // 每月还息一次还本
+            interestCount = Amount3Helper.getInterestCount(invest, yearRate, totalmonth);
+        } else {
+            // 一次还本还息
+            interestCount = Amount4Helper.getInterestCount(invest, yearRate, totalmonth);
+        }
+        return interestCount;
     }
 }

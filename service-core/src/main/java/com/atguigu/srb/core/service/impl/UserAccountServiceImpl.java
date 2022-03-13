@@ -15,6 +15,7 @@ import com.atguigu.srb.core.pojo.entity.UserAccount;
 import com.atguigu.srb.core.pojo.entity.UserInfo;
 import com.atguigu.srb.core.service.TransFlowService;
 import com.atguigu.srb.core.service.UserAccountService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,5 +116,16 @@ public class UserAccountServiceImpl extends ServiceImpl<UserAccountMapper, UserA
         transFlowService.saveTransFlow(transFlowBO);
 
         return "success";
+    }
+
+    /**
+     * 根据用户id查询用户账户余额
+     *
+     * @param userId 用户id
+     */
+    @Override
+    public BigDecimal getAccountByUserId(Long userId) {
+        UserAccount userAccount = baseMapper.selectOne(new QueryWrapper<UserAccount>().eq("user_id", userId));
+        return userAccount.getAmount();
     }
 }

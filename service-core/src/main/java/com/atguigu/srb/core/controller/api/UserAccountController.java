@@ -11,10 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -63,19 +60,31 @@ public class UserAccountController {
         log.info("用户充值异步回调: " + JSON.toJSONString(paramMap));
 
         // 校验签名
-        if (RequestHelper.isSignEquals(paramMap)){
+        if (RequestHelper.isSignEquals(paramMap)) {
             // 充值成功交易
-            if ("0001".equals(paramMap.get("resultCode"))){
+            if ("0001".equals(paramMap.get("resultCode"))) {
                 return userAccountService.notify(paramMap);
-            }else{
+            } else {
                 // 充值失败
                 log.info("用户充值异步回调失败: " + JSON.toJSONString(paramMap));
                 return "success";
             }
-        }else {
+        } else {
             log.info("用户充值异步回调签名错误: " + JSON.toJSONString(paramMap));
             return "fail";
         }
+    }
+
+    /**
+     * 查询用户账户余额
+     */
+    @ApiOperation("查询账户余额")
+    @GetMapping("/auth/getAccount")
+    public R getAccount(HttpServletRequest request) {
+        String token = request.getHeader("token");
+        Long userId = JwtUtils.getUserId(token);
+        BigDecimal account = userAccountService.getAccountByUserId(userId);
+        return R.ok().data("account", account);
     }
 
 }
