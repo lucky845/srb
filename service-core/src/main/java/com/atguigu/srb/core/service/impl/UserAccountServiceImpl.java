@@ -53,6 +53,8 @@ public class UserAccountServiceImpl extends ServiceImpl<UserAccountMapper, UserA
      */
     @Override
     public String commitChange(BigDecimal chargeAmt, Long userId) {
+
+        // 获取充值人绑定协议号
         UserInfo userInfo = userInfoMapper.selectById(userId);
         String bindCode = userInfo.getBindCode();
         // 判断用户绑定状态 USER_NO_BIND_ERROR(302, "用户未绑定")
@@ -60,14 +62,22 @@ public class UserAccountServiceImpl extends ServiceImpl<UserAccountMapper, UserA
 
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("agentId", HfbConst.AGENT_ID);
-        paramMap.put("agentBillNo", LendNoUtils.getNo());
+        // 充值单号
+        paramMap.put("agentBillNo", LendNoUtils.getChargeNo());
+        // 用户绑定协议号
         paramMap.put("bindCode", bindCode);
+        // 充值金额
         paramMap.put("chargeAmt", chargeAmt);
+        // 手续费
         paramMap.put("feeAmt", new BigDecimal("0"));
         // 检查常量是否正确
+        // 异步调用地址
         paramMap.put("notifyUrl", HfbConst.RECHARGE_NOTIFY_URL);
+        // 返回地址
         paramMap.put("returnUrl", HfbConst.RECHARGE_RETURN_URL);
+        // 时间戳
         paramMap.put("timestamp", RequestHelper.getTimestamp());
+        // 签名
         String sign = RequestHelper.getSign(paramMap);
         paramMap.put("sign", sign);
 
