@@ -38,4 +38,11 @@ public interface LendItemService extends IService<LendItem> {
      * @param status 状态
      */
     List<LendItem> selectByLendId(Long lendId, Integer status);
+
+    /**
+     * 获取投资列表
+     *
+     * @param lendId 借款id
+     */
+    List<LendItem> selectByLendId(Long lendId);
 }
