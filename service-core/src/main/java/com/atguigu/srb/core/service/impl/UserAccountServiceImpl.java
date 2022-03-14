@@ -102,7 +102,7 @@ public class UserAccountServiceImpl extends ServiceImpl<UserAccountMapper, UserA
         boolean isSave = transFlowService.isSaveTransFlow(agentBillNo1);
         if (isSave) {
             log.warn("幂等性返回");
-            return "fail";
+            return "success";
         }
 
         // 充值人绑定协议号
