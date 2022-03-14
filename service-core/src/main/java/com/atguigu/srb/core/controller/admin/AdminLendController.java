@@ -58,5 +58,17 @@ public class AdminLendController {
         return R.ok().data("lendDetail", result);
     }
 
+    /**
+     * 满标放款
+     * @param id 标的id
+     */
+    @ApiOperation("放款")
+    @GetMapping("/makeLoan/{id}")
+    public R makeLoan(@ApiParam(value = "标的id", required = true)
+                      @PathVariable("id") Long id) {
+        lendService.makeLoan(id);
+        return R.ok().message("放款成功");
+    }
+
 }
 

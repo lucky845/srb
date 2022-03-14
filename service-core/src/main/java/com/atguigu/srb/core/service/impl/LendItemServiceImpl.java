@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -221,4 +222,18 @@ public class LendItemServiceImpl extends ServiceImpl<LendItemMapper, LendItem> i
         return baseMapper.selectOne(queryWrapper);
     }
 
+    /**
+     * 根据lendId获取投资记录
+     *
+     * @param lendId 订单id
+     * @param status 状态
+     */
+    @Override
+    public List<LendItem> selectByLendId(Long lendId, Integer status) {
+        QueryWrapper<LendItem> lendItemQueryWrapper = new QueryWrapper<>();
+        lendItemQueryWrapper.eq("lend_id", lendId);
+        lendItemQueryWrapper.eq("status", status);
+        List<LendItem> lendItemList = baseMapper.selectList(lendItemQueryWrapper);
+        return lendItemList;
+    }
 }

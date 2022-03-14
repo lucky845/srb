@@ -19,7 +19,7 @@ public class Amount3Helper {
      * @param totalMonth 还款总月数
      * @return 每月偿还利息
      */
-    public static Map getPerMonthInterest(BigDecimal invest, BigDecimal yearRate, int totalMonth) {
+    public static Map<Integer, BigDecimal> getPerMonthInterest(BigDecimal invest, BigDecimal yearRate, int totalMonth) {
         Map<Integer, BigDecimal> map = new HashMap<>();
         //每月偿还利息
         BigDecimal monthIncome = invest.multiply(yearRate).divide(new BigDecimal(12), 8, BigDecimal.ROUND_DOWN);
