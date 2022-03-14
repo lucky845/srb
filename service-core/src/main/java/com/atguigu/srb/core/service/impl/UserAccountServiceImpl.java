@@ -15,6 +15,7 @@ import com.atguigu.srb.core.pojo.entity.UserAccount;
 import com.atguigu.srb.core.pojo.entity.UserInfo;
 import com.atguigu.srb.core.service.TransFlowService;
 import com.atguigu.srb.core.service.UserAccountService;
+import com.atguigu.srb.core.service.UserBindService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +45,12 @@ public class UserAccountServiceImpl extends ServiceImpl<UserAccountMapper, UserA
 
     @Autowired
     private TransFlowService transFlowService;
+
+    @Autowired
+    private UserBindService userBindService;
+
+    @Autowired
+    private UserAccountService userAccountService;
 
     /**
      * 提交用户充值信息
@@ -137,5 +144,69 @@ public class UserAccountServiceImpl extends ServiceImpl<UserAccountMapper, UserA
     public BigDecimal getAccountByUserId(Long userId) {
         UserAccount userAccount = baseMapper.selectOne(new QueryWrapper<UserAccount>().eq("user_id", userId));
         return userAccount.getAmount();
+    }
+
+    /**
+     * 用户提现
+     *
+     * @param fetchAmt 提现金额
+     * @param userId   用户id
+     */
+    @Override
+    public String commitWithdraw(BigDecimal fetchAmt, Long userId) {
+        //账户可用余额充足：当前用户的余额 >= 当前用户的提现金额
+        BigDecimal amount = userAccountService.getAccountByUserId(userId);//获取当前用户的账户余额
+        Assert.isTrue(amount.doubleValue() >= fetchAmt.doubleValue(),
+                ResponseEnum.NOT_SUFFICIENT_FUNDS_ERROR);
+
+        String bindCode = userBindService.getBindCodeByUserId(userId);
+
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("agentId", HfbConst.AGENT_ID);
+        paramMap.put("agentBillNo", LendNoUtils.getWithdrawNo());
+        paramMap.put("bindCode", bindCode);
+        paramMap.put("fetchAmt", fetchAmt);
+        paramMap.put("feeAmt", new BigDecimal(0));
+        paramMap.put("notifyUrl", HfbConst.WITHDRAW_NOTIFY_URL);
+        paramMap.put("returnUrl", HfbConst.WITHDRAW_RETURN_URL);
+        paramMap.put("timestamp", RequestHelper.getTimestamp());
+        String sign = RequestHelper.getSign(paramMap);
+        paramMap.put("sign", sign);
+
+        //构建自动提交表单
+        String formStr = FormHelper.buildForm(HfbConst.WITHDRAW_URL, paramMap);
+        return formStr;
+    }
+
+    /**
+     * 用户提现异步回调
+     *
+     * @param paramMap 回调参数
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void notifyWithdraw(Map<String, Object> paramMap) {
+        log.info("提现成功");
+        String agentBillNo = (String) paramMap.get("agentBillNo");
+        boolean result = transFlowService.isSaveTransFlow(agentBillNo);
+        if (result) {
+            log.warn("幂等性返回");
+            return;
+        }
+
+        String bindCode = (String) paramMap.get("bindCode");
+        String fetchAmt = (String) paramMap.get("fetchAmt");
+
+        // 根据用户账户修改账户金额
+        baseMapper.updateAccount(bindCode, new BigDecimal("-" + fetchAmt), new BigDecimal(0));
+
+        // 增加交易流水
+        TransFlowBO transFlowBO = new TransFlowBO(
+                agentBillNo,
+                bindCode,
+                new BigDecimal(fetchAmt),
+                TransTypeEnum.WITHDRAW,
+                "提现");
+        transFlowService.saveTransFlow(transFlowBO);
     }
 }
