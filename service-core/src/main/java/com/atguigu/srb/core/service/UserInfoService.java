@@ -4,6 +4,7 @@ import com.atguigu.srb.core.pojo.entity.UserInfo;
 import com.atguigu.srb.core.pojo.query.UserInfoQuery;
 import com.atguigu.srb.core.pojo.vo.LoginVO;
 import com.atguigu.srb.core.pojo.vo.RegisterVO;
+import com.atguigu.srb.core.pojo.vo.UserIndexVO;
 import com.atguigu.srb.core.pojo.vo.UserInfoVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -56,4 +57,11 @@ public interface UserInfoService extends IService<UserInfo> {
      * @param mobile 手机号
      */
     boolean checkMobile(String mobile);
+
+    /**
+     * 根据用户id获取用户个人空间信息
+     *
+     * @param userId 用户id
+     */
+    UserIndexVO getIndexUserInfo(Long userId);
 }

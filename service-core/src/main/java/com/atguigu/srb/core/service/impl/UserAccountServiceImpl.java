@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.beans.Transient;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -105,8 +104,8 @@ public class UserAccountServiceImpl extends ServiceImpl<UserAccountMapper, UserA
         log.info("充值成功: " + JSON.toJSONString(paramMap));
 
         // 判断交易流水是否存在
-        String agentBillNo1 = (String) paramMap.get("agentBillNo");
-        boolean isSave = transFlowService.isSaveTransFlow(agentBillNo1);
+        String agentBillNo = (String) paramMap.get("agentBillNo");
+        boolean isSave = transFlowService.isSaveTransFlow(agentBillNo);
         if (isSave) {
             log.warn("幂等性返回");
             return "success";
@@ -122,7 +121,6 @@ public class UserAccountServiceImpl extends ServiceImpl<UserAccountMapper, UserA
 
         // 增加交易流水
         // 商户充值订单号
-        String agentBillNo = (String) paramMap.get("agentBillNo");
         TransFlowBO transFlowBO = new TransFlowBO(
                 agentBillNo,
                 bindCode,

@@ -14,6 +14,7 @@ import com.atguigu.srb.core.pojo.entity.UserLoginRecord;
 import com.atguigu.srb.core.pojo.query.UserInfoQuery;
 import com.atguigu.srb.core.pojo.vo.LoginVO;
 import com.atguigu.srb.core.pojo.vo.RegisterVO;
+import com.atguigu.srb.core.pojo.vo.UserIndexVO;
 import com.atguigu.srb.core.pojo.vo.UserInfoVO;
 import com.atguigu.srb.core.service.UserInfoService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -187,5 +188,45 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         queryWrapper.eq("mobile", mobile);
         Integer count = baseMapper.selectCount(queryWrapper);
         return count > 0;
+    }
+
+    /**
+     * 根据用户id获取用户个人空间信息
+     *
+     * @param userId 用户id
+     */
+    @Override
+    public UserIndexVO getIndexUserInfo(Long userId) {
+
+        // 用户信息
+        UserInfo userInfo = baseMapper.selectById(userId);
+
+        // 账户信息
+        QueryWrapper<UserAccount> userAccountQueryWrapper = new QueryWrapper<>();
+        userAccountQueryWrapper.eq("user_id", userId);
+        UserAccount userAccount = userAccountMapper.selectOne(userAccountQueryWrapper);
+
+        // 登陆信息
+        QueryWrapper<UserLoginRecord> userLoginRecordQueryWrapper = new QueryWrapper<>();
+        userLoginRecordQueryWrapper
+                .eq("user_id",userId)
+                .orderByDesc("id")
+                .last("limit 1");
+        UserLoginRecord userLoginRecord = userLoginRecordMapper.selectOne(userLoginRecordQueryWrapper);
+
+
+        //组装结果对象
+        UserIndexVO userIndexVO = new UserIndexVO();
+        userIndexVO.setUserId(userId);
+        userIndexVO.setUserType(userInfo.getUserType());
+        userIndexVO.setName(userInfo.getName());
+        userIndexVO.setNickName(userInfo.getNickName());
+        userIndexVO.setHeadImg(userInfo.getHeadImg());
+        userIndexVO.setBindStatus(userInfo.getBindStatus());
+        userIndexVO.setAmount(userAccount.getAmount());
+        userIndexVO.setFreezeAmount(userAccount.getFreezeAmount());
+        userIndexVO.setLastLoginTime(userLoginRecord.getCreateTime());
+
+        return userIndexVO;
     }
 }

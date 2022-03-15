@@ -127,11 +127,11 @@ public class UserBindServiceImpl extends ServiceImpl<UserBindMapper, UserBind> i
     /**
      * 根据投资用户id获取绑定编号
      *
-     * @param investUserId 投资用户id
+     * @param userId 投资用户id
      */
     @Override
-    public String getBindCodeByUserId(Long investUserId) {
-        UserBind userBind = baseMapper.selectOne(new QueryWrapper<UserBind>().eq("user_id", investUserId));
+    public String getBindCodeByUserId(Long userId) {
+        UserBind userBind = baseMapper.selectOne(new QueryWrapper<UserBind>().eq("user_id", userId));
         return userBind.getBindCode();
     }
 }

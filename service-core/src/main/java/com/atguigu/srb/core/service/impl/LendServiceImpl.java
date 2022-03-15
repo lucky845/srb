@@ -90,9 +90,10 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
         lend.setTitle(borrowInfoApprovalVO.getTitle());
         lend.setAmount(borrowInfo.getAmount());
         lend.setPeriod(borrowInfo.getPeriod());
-        lend.setLendYearRate(borrowInfo.getBorrowYearRate());
         // 从审批对象中获取
+        lend.setLendYearRate(borrowInfoApprovalVO.getLendYearRate().divide(new BigDecimal(100)));
         lend.setServiceRate(borrowInfoApprovalVO.getServiceRate().divide(new BigDecimal(100)));
+
         lend.setReturnMethod(borrowInfo.getReturnMethod());
         lend.setLowestAmount(new BigDecimal(100));
         lend.setInvestAmount(new BigDecimal(0));
@@ -226,11 +227,11 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
         // 月年化
         BigDecimal monthRate = lend.getServiceRate().divide(new BigDecimal(12), 8, BigDecimal.ROUND_DOWN);
         // 平台实际收益 = 已投金额 + 月年化 + 标的期数
-        BigDecimal realAmount = lend.getLowestAmount().multiply(monthRate).multiply(new BigDecimal(lend.getPeriod()));
+        BigDecimal realAmount = lend.getInvestAmount().multiply(monthRate).multiply(new BigDecimal(lend.getPeriod()));
 
         // 商户手续费(平台实际收益)
         paramMap.put("mchFee", realAmount);
-        paramMap.put("timeStamp", RequestHelper.getTimestamp());
+        paramMap.put("timestamp", RequestHelper.getTimestamp());
         paramMap.put("sign", RequestHelper.getSign(paramMap));
 
         log.info("放款参数: " + JSON.toJSONString(paramMap));
@@ -239,7 +240,7 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
         log.info("放款结果: " + JSON.toJSONString(result));
 
         // 放款失败
-        if ("0001".equals(result.getString("resultCode"))) {
+        if (!"0000".equals(result.getString("resultCode"))) {
             throw new BusinessException(result.getString("resultMsg"));
         }
 
@@ -308,8 +309,8 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
         ArrayList<LendReturn> lendReturnList = new ArrayList<>();
 
         // 按还款时间生成还款计划
-        int len = lend.getPeriod();
-        for (int i = 0; i < len; i++) {
+        int len = lend.getPeriod().intValue();
+        for (int i = 1; i <= len; i++) {
 
             // 创建还款计划表
             LendReturn lendReturn = new LendReturn();
@@ -418,9 +419,9 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
 
         // 根据还款方式计算本金和利息
         if (lend.getReturnMethod().intValue() == ReturnMethodEnum.ONE.getMethod()) {
-            //利息
+            // 利息
             mapInterest = Amount1Helper.getPerMonthInterest(amount, yearRate, totalMonth);
-            //本金
+            // 本金
             mapPrincipal = Amount1Helper.getPerMonthPrincipal(amount, yearRate, totalMonth);
         } else if (lend.getReturnMethod().intValue() == ReturnMethodEnum.TWO.getMethod()) {
             mapInterest = Amount2Helper.getPerMonthInterest(amount, yearRate, totalMonth);
@@ -441,7 +442,7 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
             Long lendReturnId = lendReturnMap.get(currentPeriod);
 
             LendItemReturn lendItemReturn = new LendItemReturn();
-            lendItemReturn.setLendId(lendReturnId);
+            lendItemReturn.setLendReturnId(lendReturnId);
             lendItemReturn.setLendItemId(lendItemId);
             lendItemReturn.setInvestUserId(lendItem.getInvestUserId());
             lendItemReturn.setLendId(lendItem.getLendId());
@@ -450,7 +451,7 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
             lendItemReturn.setCurrentPeriod(currentPeriod);
             lendItemReturn.setReturnMethod(lend.getReturnMethod());
 
-            //最后一次本金计算
+            // 最后一次本金计算
             if (lendItemReturnList.size() > 0 && currentPeriod.intValue() == lend.getPeriod().intValue()) {
                 // 最后一期本金 = 本金 - 前几次之和
                 BigDecimal sumPrincipal = lendItemReturnList.stream()
@@ -459,11 +460,21 @@ public class LendServiceImpl extends ServiceImpl<LendMapper, Lend> implements Le
                 // 最后一期应还本金 = 当前投资人的总投资金额 - 除了最后一期前面期数计算出来的所有应还本金
                 BigDecimal lastPrincipal = lendItem.getInvestAmount().subtract(sumPrincipal);
                 lendItemReturn.setPrincipal(lastPrincipal);
+
+                // 利息
+                BigDecimal sumInterest = lendItemReturnList.stream()
+                        .map(LendItemReturn::getInterest)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                BigDecimal lastInterest = lendItem.getExpectAmount().subtract(sumInterest);
+                lendItemReturn.setInterest(lastInterest);
+
             } else {
                 lendItemReturn.setPrincipal(mapPrincipal.get(currentPeriod));
                 lendItemReturn.setInterest(mapInterest.get(currentPeriod));
             }
 
+            // 回款总金额
             lendItemReturn.setTotal(lendItemReturn.getPrincipal().add(lendItemReturn.getInterest()));
             lendItemReturn.setFee(new BigDecimal("0"));
             lendItemReturn.setReturnDate(lend.getLendStartDate().plusMonths(currentPeriod));

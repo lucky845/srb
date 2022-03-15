@@ -98,7 +98,7 @@ public class LendItemServiceImpl extends ServiceImpl<LendItemMapper, LendItem> i
         // 标的下的投资信息
         LendItem lendItem = new LendItem();
         // 投资人id
-        lendItem.setInvestUserId(investVO.getInvestUserId());
+        lendItem.setInvestUserId(investUserId);
         // 投资人名字
         lendItem.setInvestName(investVO.getInvestName());
         // 投资条目编号(一个lend对应一个或多个lendItem)
@@ -141,7 +141,7 @@ public class LendItemServiceImpl extends ServiceImpl<LendItemMapper, LendItem> i
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("agentId", HfbConst.AGENT_ID);
         paramMap.put("voteBindCode", bindCode);
-        paramMap.put("benefitBindCode", benefitBindCode);
+        paramMap.put("benefitBindCode",benefitBindCode);
         paramMap.put("agentProjectCode", lend.getLendNo());//项目标号
         paramMap.put("agentProjectName", lend.getTitle());
         // 在资金托管平台上的投资订单的唯一编号，要和lendItemNo保持一致。
@@ -197,8 +197,8 @@ public class LendItemServiceImpl extends ServiceImpl<LendItemMapper, LendItem> i
         // 修改标的信息： 投资人数、已投金额
         Long lendId = lendItem.getLendId();
         Lend lend = lendMapper.selectById(lendId);
-        lend.setInvestNum(lend.getInvestNum());
-        lend.setInvestAmount(lend.getInvestAmount());
+        lend.setInvestNum(lend.getInvestNum() + 1);
+        lend.setInvestAmount(lend.getInvestAmount().add(lendItem.getInvestAmount()));
         lendMapper.updateById(lend);
 
         // 新增交易流水
