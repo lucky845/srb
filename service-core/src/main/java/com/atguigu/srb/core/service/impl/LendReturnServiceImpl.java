@@ -156,6 +156,12 @@ public class LendReturnServiceImpl extends ServiceImpl<LendReturnMapper, LendRet
         LendReturn lendReturn = baseMapper.selectOne(lendReturnQueryWrapper);
 
         // 更新还款状态
+        lendReturn.setStatus(1);
+        lendReturn.setFee(new BigDecimal(voteFeeAmt));
+        lendReturn.setRealReturnTime(LocalDateTime.now());
+        baseMapper.updateById(lendReturn);
+
+        // 更新标的信息
         Lend lend = lendMapper.selectById(lendReturn.getLendId());
         // 最后一次还款更新标的状态
         if (lendReturn.getLast()) {
@@ -177,6 +183,8 @@ public class LendReturnServiceImpl extends ServiceImpl<LendReturnMapper, LendRet
                 TransTypeEnum.RETURN_DOWN,
                 "借款人还款扣减, 项目编号: " + lend.getLendNo() + ", 项目名称: " + lend.getTitle()
         );
+        // 保存还款交易流水
+        transFlowService.saveTransFlow(transFlowBO);
 
         // 获取回款明细
         List<LendItemReturn> lendItemReturnList = lendItemReturnService.selectLendItemReturnList(lendReturn.getId());

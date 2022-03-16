@@ -81,8 +81,7 @@ public class LendItemReturnServiceImpl extends ServiceImpl<LendItemReturnMapper,
             LendItem lendItem = lendItemMapper.selectById(lendItemReturn.getLendItemId());
             String bindCode = userBindService.getBindCodeByUserId(lendItem.getInvestUserId());
 
-            HashMap<String, Object> map = new HashMap<>();
-            // 项目编号
+            Map<String, Object> map = new HashMap<>();
             //项目编号
             map.put("agentProjectCode", lend.getLendNo());
             //出借编号
